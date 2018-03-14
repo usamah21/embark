@@ -5,12 +5,13 @@
     "js/bootstrap.js": "app/js/_vendor/bootstrap.min.js",
     "css/app.css": ["app/css/**"],
     "images/": ["app/images/**"],
-    "js/app.js": ["app/js/index.js"],
-    "js/test.js": ["app/js/_vendor/jquery.min.js", "app/js/_vendor/async.min.js", "app/js/test.js", "app/js/non_existant_file.js"],
+    "js/test.js": ["app/js/_vendor/jquery.min.js", "app/js/_vendor/async.min.js", "app/js/test.js"],
     "index.html": "app/index.html",
     "test.html": "app/test.html",
     "test2.html": "app/test2.html",
-    "test3.html": "app/test3.haml"
+    "test3.html": "app/test3.haml",
+    "js/my.js": "app/js/my.ts",
+    "js/my2.js": "app/js/my2.ts"
   },
   "buildDir": "dist/",
   "config": "config/",

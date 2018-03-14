@@ -18,6 +18,7 @@
     "jquery": "^1.11.3",
     "react": "^16.0.0",
     "react-bootstrap": "^0.32.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "@angular/core": "5.2.7"
   }
 }
