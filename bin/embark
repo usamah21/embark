@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
-try {
-  eval('let __nodeTest = 123;');
-} catch(e) {
-  if (e.name === 'SyntaxError') {
-    console.error("unsupported version of NodeJS. Make sure you are running nodejs 6.9.5 or above");
+if (semver.lt(semver.clean(process.version), '8.11.3')) {
+    console.error('unsupported version of NodeJS. Make sure you are running' +
+                  ' nodejs 8.11.3 or above');
     process.exit();
-  }
 }
+// try {
+//   eval('let __nodeTest = 123;');
+// } catch(e) {
+//   if (e.name === 'SyntaxError') {
+//     console.error('unsupported version of NodeJS. Make sure you are running nodejs 6.9.5 or above');
+//     process.exit();
+//   }
+// }
 
 var Cmd = require('../cmd/cmd');
 var cli = new Cmd();
