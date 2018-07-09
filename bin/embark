@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+var child_process = require('child_process');
+var fs = require('fs');
+var path = require('path');
+var semver = require('semver');
+
 if (semver.lt(semver.clean(process.version), '8.11.3')) {
     console.error('unsupported version of NodeJS. Make sure you are running' +
                   ' nodejs 8.11.3 or above');
@@ -14,6 +19,118 @@ if (semver.lt(semver.clean(process.version), '8.11.3')) {
 //   }
 // }
 
-var Cmd = require('../cmd/cmd');
-var cli = new Cmd();
-cli.process(process.argv);
+console.log();
+console.log('process.argv');
+console.log(process.argv);
+console.log();
+
+var CmdEmbark = require('../lib/index');
+var cmdPath = __filename;
+var cmdPathReal = fs.realpathSync(cmdPath);
+var cmdVersion = semver.clean((new CmdEmbark).version);
+
+var PkgCmdEmbark = null;
+var pkgCmdPath = process.cwd() + '/node_modules/.bin/embark';
+var pkgCmdPathReal = null;
+var pkgCmdVersion = null;
+
+if (path.dirname(cmdPath).slice(-4) !== '.bin') {
+    try {
+        pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
+    } catch (e) {
+        console.warn('did not find package-local embark at ' + pkgCmdPath);
+    }
+}
+
+console.log();
+console.log('cmd path:', cmdPath);
+console.log('cmd real:', cmdPathReal);
+console.log('pkgCmd path:', pkgCmdPath);
+console.log('pkgCmd real:', pkgCmdPathReal);
+console.log();
+
+var pkgJson = null;
+var pkgJsonPath = process.cwd() + '/package.json';
+var pkgJsonPathReal = null;
+var pkgJsonDepVersionRange = null;
+var pkgJsonDevDepVersionRange = null;
+
+try {
+    pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
+} catch (e) {
+    console.warn('did not find ' + pkgJsonPath);
+}
+
+if (pkgJsonPathReal) {
+    try {
+        pkgJson = require(pkgJsonPath);
+    } catch (e) {
+        console.warn('unable to load ' + pkgJsonPath);
+    }
+}
+
+if (pkgJsonPathReal && pkgJson) {
+    try {
+        pkgJsonDepVersionRange = pkgJson.dependencies.embark;
+        pkgJsonDepVersionRange =
+            semver.Range(pkgJsonDepVersionRange).range;
+    } catch (e) {
+        pkgJsonDepVersionRange = null;
+    }
+
+    try {
+        pkgJsonDevDepVersionRange = pkgJson.devDependencies.embark;
+        pkgJsonDevDepVersionRange =
+            semver.Range(pkgJsonDevDepVersionRange).range;
+    } catch (e) {
+        pkgJsonDevDepVersionRange = null;
+    }
+
+    if (!(pkgJsonDepVersionRange || pkgJsonDevDepVersionRange)) {
+        console.warn('embark was not validly specified in either ' +
+                     '"dependencies" or "devDependencies" of ' + pkgJsonPath);
+    }
+}
+
+console.log();
+console.log('package.json');
+console.log(pkgJson);
+
+console.log();
+console.log('embark dep info');
+console.log('dep:', pkgJsonDepVersionRange);
+console.log('devDep:', pkgJsonDevDepVersionRange);
+console.log();
+
+if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
+    try {
+        PkgCmdEmbark = require(
+            path.dirname(pkgCmdPath) + '/../embark/lib/index'
+        );
+        pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
+
+        if (cmdVersion !== pkgCmdVersion) {
+            console.warn('Embark version mismatch: ' + cmdPath +
+                         ' is version ' + cmdVersion +
+                         ' but ' + pkgCmdPath +
+                         ' is version ' + pkgCmdVersion);
+        }
+    } catch (e) {
+        console.warn('unable to determine version of ' + pkgCmdPath);
+    }
+}
+
+console.log();
+console.log('embark version info');
+console.log('cmd:', cmdVersion);
+console.log('pkgCmd:', pkgCmdVersion);
+console.log();
+
+if (pkgCmdVersion) {
+    process.argv[1] = pkgCmdPath;
+    require(pkgCmdPath);
+} else {
+    var Cmd = require('../lib/cmd');
+    var cli = new Cmd();
+    cli.process(process.argv);
+}
