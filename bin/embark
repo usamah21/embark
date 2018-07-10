@@ -31,6 +31,8 @@ var CmdEmbark = require('../lib/index');
 var cmdPath = __filename;
 var cmdPathReal = fs.realpathSync(cmdPath);
 var cmdVersion = semver.clean((new CmdEmbark).version);
+// if the property exists, the command was executed via `npm run ...`
+var has_INIT_CWD = process.env.hasOwnProperty('INIT_CWD');
 
 // console.log();
 // console.log('process.argv');
