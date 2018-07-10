@@ -27,14 +27,14 @@ if (semver.lt(procNodeVer, minNodeVer)) {
 }
 
 // if the property exists, the command was executed via `npm run ...`
-var has_INIT_CWD = process.env.hasOwnProperty('INIT_CWD');
+var isNpmRun = process.env.hasOwnProperty('INIT_CWD');
 
 // console.log();
 // console.log('process.argv');
 // console.log(process.argv);
 
 findPrefix(process.cwd()).then((pkgdir) => {
-    if (!has_INIT_CWD) {
+    if (!isNpmRun) {
         process.chdir(pkgdir);
     }
 
@@ -219,7 +219,7 @@ findPrefix(process.cwd()).then((pkgdir) => {
     var localDotBinCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
     var localDotBinCmdPathReal = null;
 
-    if (!has_INIT_CWD) {
+    if (!isNpmRun) {
         try {
             localCmdPathReal = fs.realpathSync(localCmdPath);
         } catch (e) {}
@@ -237,7 +237,7 @@ findPrefix(process.cwd()).then((pkgdir) => {
     // console.log('localDotBinCmd path:', localDotBinCmdPath);
     // console.log('localDotBinCmd real:', localDotBinCmdPathReal);
 
-    if (!(has_INIT_CWD
+    if (!(isNpmRun
           || cmdPathReal === localCmdPathReal
           || cmdPathReal === localDotBinCmdPathReal) && !localDotBinCmdPathReal) {
         console.warn(reformat(`
