@@ -24,8 +24,8 @@ if (semver.lt(procVer, minVer)) {
 
         ${`Embark requires a newer version of Node.js`.red.bold}
 
-        ${`>= ${minVer}`.green.bold}   required
-           ${procVer.red.bold}   actual
+        ${`>= ${minNodeVer}`.green.bold} \t required
+        ${`   ${procNodeVer}`.red.bold} \t actual
     `));
     process.exit();
 }
@@ -145,8 +145,8 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
 
                 ${`Invoked embark cli was a different version than package-local embark`.yellow.bold}
 
-                local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
-                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
+                ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
+                ${cmdVersion.yellow.bold} \t invoked \t ${cmdPath}
             `));
             warned = true;
         }
