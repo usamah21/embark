@@ -39,51 +39,154 @@ findPrefix(process.cwd()).then((pkgdir) => {
     }
 
     var warned = false;
+    var pkgJson = null;
+    var pkgJsonPath = path.join(process.cwd(), 'package.json');
+    var pkgJsonPathReal = null;
+
+    var pkgJsonDepVersionRange = null;
+    var pkgJsonDepVersionRangeMissing = false;
+    var pkgJsonDepVersionRangeValid = null;
+
+    var pkgJsonDevDepVersionRange = null;
+    var pkgJsonDevDepVersionRangeMissing = false;
+    var pkgJsonDevDepVersionRangeValid = null;
 
     try {
         pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
+        pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
     } catch (e) {
         console.warn(reformat(`
             ${`Missing package-local embark command`.underline}
+        console.error(reformat(`
+            ${`Missing package.json`.underline}
+
+            ${`File not found`.red.bold}
 
             ${`Path not found`.yellow.bold}
+            ${`Make sure a valid package.json file exists at the top-level of your DApp project`.yellow.bold}
 
             ${pkgCmdPath.red.bold}
+            package.json path: ${pkgJsonPath.red.bold}
         `));
         warned = true;
+        process.exit(1);
     }
 
+    if (pkgJsonPathReal) {
+        try {
+            pkgJson = require(pkgJsonPath);
+        } catch (e) {
+            console.error(reformat(`
+                ${`Bad package.json`.underline}
+
+                ${`File could not be parsed as valid JSON`.red.bold}
+
+                package.json path: ${pkgJsonPath.red.bold}
+            `));
+            process.exit(1);
+        }
+    }
+
+    // console.log();
+    // console.log('package.json');
+    // console.log(pkgJson);
+
+    if (pkgJsonPathReal && pkgJson) {
+        try {
+            pkgJsonDepVersionRange = pkgJson.dependencies.embark;
+        } catch (e) {}
+
+        if (!pkgJsonDepVersionRange) {
+            pkgJsonDepVersionRangeMissing = true;
+        }
+
+        if (!pkgJsonDepVersionRangeMissing) {
+            try {
+                pkgJsonDepVersionRangeValid =
+                    semver.Range(pkgJsonDepVersionRange).range;
+            } catch (e) {}
+        }
+
+        try {
+            pkgJsonDevDepVersionRange = pkgJson.devDependencies.embark;
+        } catch (e) {}
+
+        if (!pkgJsonDevDepVersionRange) {
+            pkgJsonDevDepVersionRangeMissing = true;
+        }
+
+        if (!pkgJsonDevDepVersionRangeMissing) {
+            try {
+                pkgJsonDevDepVersionRangeValid =
+                    semver.Range(pkgJsonDevDepVersionRange).range;
+            } catch (e) {}
+        }
+
+        if (pkgJsonDepVersionRangeMissing && pkgJsonDevDepVersionRangeMissing) {
+            console.warn(reformat(`
+                ${`Missing "embark" depedency in package.json`.underline}
+
+                ${`Embark package was not specified in "dependencies" or "devDependencies" of package.json`.yellow.bold}
+
+                ${`recommended fix: \`npm install --save embark\``.green.bold}
+
+                package.json path: ${pkgJsonPath.yellow.bold}
+            `));
+            warned = true;
+        }
+
+        if (!pkgJsonDepVersionRangeMissing && !pkgJsonDevDepVersionRangeMissing) {
+            console.warn(reformat(`
+                ${`Multiple "embark" depedencies in package.json`.underline}
+
+                ${`Embark package was specified in both "dependencies" and "devDependencies" of package.json`.yellow.bold}
+
+                package.json path: ${pkgJsonPath.yellow.bold}
+            `));
+            warned = true;
+        }
+
+        function warnInvalid(which) {
+            console.warn(reformat(`
+                ${`Bad "embark" depedency in package.json`.underline}
+
+                ${`Embark package was invalidly specified in "${which}" of package.json`.yellow.bold}
+
+                package.json path: ${pkgJsonPath.yellow.bold}
+            `));
+            warned = true;
+        }
+
+        if (!pkgJsonDepVersionRangeMissing && !pkgJsonDepVersionRangeValid) {
+            warnInvalid('dependencies');
+        }
+
+        if (!pkgJsonDevDepVersionRangeMissing && !pkgJsonDevDepVersionRangeValid) {
+            warnInvalid('devDependencies');
+        }
+    }
+
+    // console.log();
+    // console.log('embark dep info');
+    // console.log('dep:', pkgJsonDepVersionRange);
+    // console.log('devDep:', pkgJsonDevDepVersionRange);
+    // console.log('depValid:', pkgJsonDepVersionRangeValid);
+    // console.log('devDepValid:', pkgJsonDevDepVersionRangeValid);
 
     try {
-        pkgJson = require(pkgJsonPath);
     } catch (e) {
-        console.warn(reformat(`
-            ${`Bad package.json`.underline}
 
-            ${`Contents invalid`.yellow.bold}
 
-            ${pkgJsonPath.red.bold}
         `));
-        warned = true;;
     }
 
     }
 
-    try {
-        pkgJsonDevDepVersionRange = pkgJson.devDependencies.embark;
-        pkgJsonDevDepVersionRange =
-            semver.Range(pkgJsonDevDepVersionRange).range;
-    } catch (e) {
-        pkgJsonDevDepVersionRange = null;
     }
 
-    if (!(pkgJsonDepVersionRange || pkgJsonDevDepVersionRange)) {
         console.warn(reformat(`
-            ${`Missing package-local depedency in package.json`.underline}
 
-            ${`"embark" was not validly specified in dependencies or devDependencies`.yellow.bold}
 
-            ${`recommended fix: \`npm install --save embark\``.green.bold}
         `));
         warned = true;
     }
