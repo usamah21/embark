@@ -136,9 +136,10 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
             console.log('\n' + dedent(`
                 ${`Embark version mismatch`.underline}
 
-                local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
-                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
+                ${`Invoked embark cli was a different version than package-local embark`.yellow.bold}
 
+                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
+                local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
             `).trim());
         }
     } catch (e) {
