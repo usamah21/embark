@@ -10,16 +10,15 @@ var semver = require('semver');
 // console.log('process.argv');
 // console.log(process.argv);
 
-var CmdEmbark = require('../lib/index');
-var minVer = '8.11.3';
-var procVer = semver.clean(process.version);
-var warned = false;
-
 function reformat(s) {
     return '\n' + dedent(s).trim();
 }
 
-if (semver.lt(procVer, minVer)) {
+var minNodeVer = '8.11.3';
+var procNodeVer = semver.clean(process.version);
+var warned = false;
+
+if (semver.lt(procNodeVer, minNodeVer)) {
     console.error(reformat(`
         ${`Unsupported Node.js version`.underline}
 
@@ -31,6 +30,7 @@ if (semver.lt(procVer, minVer)) {
     process.exit();
 }
 
+var CmdEmbark = require('../lib/index');
 var cmdPath = __filename;
 var cmdPathReal = fs.realpathSync(cmdPath);
 var cmdVersion = semver.clean((new CmdEmbark).version);
