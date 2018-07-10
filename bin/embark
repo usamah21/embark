@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// console.log();
+// console.log('process.argv');
+// console.log(process.argv);
+
 require('colors');
 var dedent = require('dedent');
 var findPrefix = require('find-npm-prefix');
@@ -29,9 +33,6 @@ if (semver.lt(procNodeVer, minNodeVer)) {
 // if the property exists, the command was executed via `npm run ...`
 var isNpmRun = process.env.hasOwnProperty('INIT_CWD');
 
-// console.log();
-// console.log('process.argv');
-// console.log(process.argv);
 
 findPrefix(process.cwd()).then((pkgdir) => {
     if (!isNpmRun) {
