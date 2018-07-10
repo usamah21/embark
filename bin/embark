@@ -17,10 +17,10 @@ if (semver.lt(procVer, minVer)) {
     console.error('\n' + dedent(`
         ${`Unsupported Node.js version`.underline}
 
-        ${`Embark requires a newer version of Node.js`.yellow.bold}
+        ${`Embark requires a newer version of Node.js`.red.bold}
 
-        actual \t\t    ${procVer.red.bold}
-        required \t ${`>= ${minVer}`.green.bold}
+        ${`>= ${minVer}`.green.bold}   required
+           ${procVer.red.bold}   actual
     `).trim());
     process.exit();
 }
