@@ -29,11 +29,11 @@ var cmdPathReal = fs.realpathSync(cmdPath);
 var cmdVersion = semver.clean((new CmdEmbark).version);
 
 var PkgCmdEmbark = null;
-var pkgCmdPath = process.cwd() + '/node_modules/.bin/embark';
+var pkgCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
 var pkgCmdPathReal = null;
 var pkgCmdVersion = null;
 
-if (path.dirname(cmdPath).slice(-4) !== '.bin') {
+if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
     try {
         pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
     } catch (e) {
@@ -49,7 +49,7 @@ console.log('pkgCmd real:', pkgCmdPathReal);
 console.log();
 
 var pkgJson = null;
-var pkgJsonPath = process.cwd() + '/package.json';
+var pkgJsonPath = path.join(process.cwd(), 'package.json');
 var pkgJsonPathReal = null;
 var pkgJsonDepVersionRange = null;
 var pkgJsonDevDepVersionRange = null;
@@ -104,7 +104,7 @@ console.log();
 if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
     try {
         PkgCmdEmbark = require(
-            path.dirname(pkgCmdPath) + '/../embark/lib/index'
+            path.join(path.dirname(pkgCmdPath), '../embark/lib/index')
         );
         pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
