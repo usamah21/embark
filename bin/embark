@@ -23,7 +23,7 @@ if (semver.lt(procNodeVer, minNodeVer)) {
     console.error(reformat(`
         ${`Unsupported Node.js version`.underline}
 
-        ${`Embark requires a newer version of Node.js`.red.bold}
+        ${`Embark requires a more recent version of Node.js`.red.bold}
 
         ${`>= ${minNodeVer}`.green.bold} \t required
         ${`   ${procNodeVer}`.red.bold} \t actual
