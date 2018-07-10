@@ -17,9 +17,9 @@ var procVer = semver.clean(process.version);
 
 if (semver.lt(procVer, minVer)) {
     console.error('\n' + dedent(`
-        ${('Unsupported Node.js version').underline}
+        ${`Unsupported Node.js version`.underline}
 
-        Embark requires a newer version of Node.js
+        ${`Embark requires a newer version of Node.js`.yellow.bold}
 
         actual \t\t    ${procVer.red.bold}
         required \t ${`>= ${minVer}`.green.bold}
@@ -41,9 +41,11 @@ if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
         pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
     } catch (e) {
         console.warn('\n' + dedent(`
-            ${('Missing package-local embark command').underline}
+            ${`Missing package-local embark command`.underline}
 
-            path not found: ${pkgCmdPath.yellow.bold}
+            ${`Path not found`.yellow.bold}
+
+            ${pkgCmdPath.red.bold}
         `).trim());
     }
 }
@@ -64,9 +66,11 @@ try {
     pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
 } catch (e) {
     console.warn('\n' + dedent(`
-        ${('Missing package.json').underline}
+        ${`Missing package.json`.underline}
 
-        path not found: ${pkgJsonPath.yellow.bold}
+        ${`Path not found`.yellow.bold}
+
+        ${pkgJsonPath.red.bold}
     `).trim());
 }
 
@@ -75,9 +79,11 @@ if (pkgJsonPathReal) {
         pkgJson = require(pkgJsonPath);
     } catch (e) {
         console.warn('\n' + dedent(`
-            ${('Bad package.json').underline}
+            ${`Bad package.json`.underline}
 
-            contents invalid: ${pkgJsonPath.yellow.bold}
+            ${`Contents invalid`.yellow.bold}
+
+            ${pkgJsonPath.red.bold}
         `).trim());
     }
 }
@@ -101,11 +107,11 @@ if (pkgJsonPathReal && pkgJson) {
 
     if (!(pkgJsonDepVersionRange || pkgJsonDevDepVersionRange)) {
         console.warn('\n' + dedent(`
-            ${('Missing package-local depedency in package.json').underline}
+            ${`Missing package-local depedency in package.json`.underline}
 
-            ${('"embark" was not validly specified in dependencies or devDependencies').yellow.bold}
+            ${`"embark" was not validly specified in dependencies or devDependencies`.yellow.bold}
 
-            recommended fix: ${`\`npm install --save embark\``.green.bold}
+            ${`recommended fix: \`npm install --save embark\``.green.bold}
         `).trim());
     }
 }
@@ -128,7 +134,7 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
 
         if (cmdVersion !== pkgCmdVersion) {
             console.log('\n' + dedent(`
-                ${('Embark version mismatch').underline}
+                ${`Embark version mismatch`.underline}
 
                 local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
                 invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
@@ -137,9 +143,9 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
         }
     } catch (e) {
         console.warn('\n' + dedent(`
-            ${('Missing version information').underline}
+            ${`Missing version information`.underline}
 
-            ${('Version info not obtained from package-local embark command').yellow.bold}
+            ${`Version info not obtained from package-local embark command`.yellow.bold}
 
             path: ${pkgCmdPath}
         `).trim());
