@@ -173,15 +173,43 @@ findPrefix(process.cwd()).then((pkgdir) => {
     // console.log('depValid:', pkgJsonDepVersionRangeValid);
     // console.log('devDepValid:', pkgJsonDevDepVersionRangeValid);
 
+    var embarkJson = null;
+    var embarkJsonPath = path.join(process.cwd(), 'embark.json');
+    var embarkJsonPathReal = null;
+
     try {
+        embarkJsonPathReal = fs.realpathSync(embarkJsonPath);
     } catch (e) {
+        console.error(reformat(`
+            ${`Missing embark.json`.underline}
 
+            ${`File not found`.red.bold}
 
+            ${`Make sure a valid embark.json file exists at the top-level of your DApp project`.yellow.bold}
+
+            embark.json path: ${embarkJsonPath.red.bold}
         `));
+        process.exit(1);
     }
 
+    if (embarkJsonPathReal) {
+        try {
+            embarkJson = require(embarkJsonPath);
+        } catch (e) {
+            console.error(reformat(`
+                ${`Bad embark.json`.underline}
+
+                ${`File could not be parsed as valid JSON`.red.bold}
+
+                embark.json path: ${embarkJsonPath.red.bold}
+            `));
+            process.exit(1);
+        }
     }
 
+    // console.log();
+    // console.log('embark.json');
+    // console.log(embarkJson);
     }
 
         console.warn(reformat(`
