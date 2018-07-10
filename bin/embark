@@ -12,6 +12,7 @@ var semver = require('semver');
 var CmdEmbark = require('../lib/index');
 var minVer = '8.11.3';
 var procVer = semver.clean(process.version);
+var warned = false;
 
 if (semver.lt(procVer, minVer)) {
     console.error('\n' + dedent(`
@@ -45,6 +46,7 @@ if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
 
             ${pkgCmdPath.red.bold}
         `).trim());
+        warned = true;
     }
 }
 
@@ -70,6 +72,7 @@ try {
 
         ${pkgJsonPath.red.bold}
     `).trim());
+    warned = true;
 }
 
 if (pkgJsonPathReal) {
@@ -82,7 +85,8 @@ if (pkgJsonPathReal) {
             ${`Contents invalid`.yellow.bold}
 
             ${pkgJsonPath.red.bold}
-        `).trim());
+        `).trim())
+        warned = true;;
     }
 }
 
@@ -111,6 +115,7 @@ if (pkgJsonPathReal && pkgJson) {
 
             ${`recommended fix: \`npm install --save embark\``.green.bold}
         `).trim());
+        warned = true;
     }
 }
 
@@ -138,7 +143,8 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
 
                 local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
                 invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
-            `).trim() + '\n');
+            `).trim());
+            warned = true;
         }
     } catch (e) {
         console.warn('\n' + dedent(`
@@ -147,8 +153,13 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
             ${`Version info not obtained from package-local embark command`.yellow.bold}
 
             path: ${pkgCmdPath}
-        `).trim() + '\n');
+        `).trim());
+        warned = true;
     }
+}
+
+if (warned) {
+    console.log();
 }
 
 // console.log();
