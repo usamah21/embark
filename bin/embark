@@ -7,10 +7,6 @@ var fs = require('fs');
 var path = require('path');
 var semver = require('semver');
 
-// console.log();
-// console.log('process.argv');
-// console.log(process.argv);
-
 function reformat(s) {
     return '\n' + dedent(s).trim();
 }
@@ -35,6 +31,11 @@ var CmdEmbark = require('../lib/index');
 var cmdPath = __filename;
 var cmdPathReal = fs.realpathSync(cmdPath);
 var cmdVersion = semver.clean((new CmdEmbark).version);
+
+// console.log();
+// console.log('process.argv');
+// console.log(process.argv);
+
 
 var PkgCmdEmbark = null;
 var pkgCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
