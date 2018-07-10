@@ -5,8 +5,8 @@ var path = require('path');
 var semver = require('semver');
 
 if (semver.lt(semver.clean(process.version), '8.11.3')) {
-    console.error('unsupported version of NodeJS. Make sure you are running' +
-                  ' nodejs 8.11.3 or above');
+    console.error('Unsupported version of Node.js, make sure you are running' +
+                  ' version 8.11.3 or newer');
     process.exit();
 }
 // try {
