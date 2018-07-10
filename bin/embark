@@ -13,7 +13,6 @@ function reformat(s) {
 
 var minNodeVer = '8.11.3';
 var procNodeVer = semver.clean(process.version);
-var warned = false;
 
 if (semver.lt(procNodeVer, minNodeVer)) {
     console.error(reformat(`
@@ -27,10 +26,6 @@ if (semver.lt(procNodeVer, minNodeVer)) {
     process.exit(1);
 }
 
-var CmdEmbark = require('../lib/index');
-var cmdPath = __filename;
-var cmdPathReal = fs.realpathSync(cmdPath);
-var cmdVersion = semver.clean((new CmdEmbark).version);
 // if the property exists, the command was executed via `npm run ...`
 var has_INIT_CWD = process.env.hasOwnProperty('INIT_CWD');
 
@@ -38,13 +33,13 @@ var has_INIT_CWD = process.env.hasOwnProperty('INIT_CWD');
 // console.log('process.argv');
 // console.log(process.argv);
 
+findPrefix(process.cwd()).then((pkgdir) => {
+    if (!has_INIT_CWD) {
+        process.chdir(pkgdir);
+    }
 
-var PkgCmdEmbark = null;
-var pkgCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
-var pkgCmdPathReal = null;
-var pkgCmdVersion = null;
+    var warned = false;
 
-if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
     try {
         pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
     } catch (e) {
@@ -57,34 +52,8 @@ if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
         `));
         warned = true;
     }
-}
 
-// console.log();
-// console.log('cmd path:', cmdPath);
-// console.log('cmd real:', cmdPathReal);
-// console.log('pkgCmd path:', pkgCmdPath);
-// console.log('pkgCmd real:', pkgCmdPathReal);
 
-var pkgJson = null;
-var pkgJsonPath = path.join(process.cwd(), 'package.json');
-var pkgJsonPathReal = null;
-var pkgJsonDepVersionRange = null;
-var pkgJsonDevDepVersionRange = null;
-
-try {
-    pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
-} catch (e) {
-    console.warn(reformat(`
-        ${`Missing package.json`.underline}
-
-        ${`Path not found`.yellow.bold}
-
-        ${pkgJsonPath.red.bold}
-    `));
-    warned = true;
-}
-
-if (pkgJsonPathReal) {
     try {
         pkgJson = require(pkgJsonPath);
     } catch (e) {
@@ -97,15 +66,7 @@ if (pkgJsonPathReal) {
         `));
         warned = true;;
     }
-}
 
-if (pkgJsonPathReal && pkgJson) {
-    try {
-        pkgJsonDepVersionRange = pkgJson.dependencies.embark;
-        pkgJsonDepVersionRange =
-            semver.Range(pkgJsonDepVersionRange).range;
-    } catch (e) {
-        pkgJsonDepVersionRange = null;
     }
 
     try {
@@ -126,23 +87,9 @@ if (pkgJsonPathReal && pkgJson) {
         `));
         warned = true;
     }
-}
 
-// console.log();
-// console.log('package.json');
-// console.log(pkgJson);
 
-// console.log();
-// console.log('embark dep info');
-// console.log('dep:', pkgJsonDepVersionRange);
-// console.log('devDep:', pkgJsonDevDepVersionRange);
 
-if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
-    try {
-        PkgCmdEmbark = require(
-            path.join(path.dirname(pkgCmdPath), '../embark/lib/index')
-        );
-        pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
         if (cmdVersion !== pkgCmdVersion) {
             console.warn(reformat(`
@@ -165,23 +112,7 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
         `));
         warned = true;
     }
-}
 
-if (warned) {
-    console.log();
-}
 
-// console.log();
-// console.log('embark version info');
-// console.log('cmd:', cmdVersion);
-// console.log('pkgCmd:', pkgCmdVersion);
-// console.log();
 
-if (pkgCmdVersion) {
-    process.argv[1] = pkgCmdPath;
-    require(pkgCmdPath);
-} else {
-    var Cmd = require('../lib/cmd');
-    var cli = new Cmd();
-    cli.process(process.argv);
-}
+});
