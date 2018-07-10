@@ -131,7 +131,7 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
         pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
         if (cmdVersion !== pkgCmdVersion) {
-            console.log('\n' + dedent(`
+            console.warn('\n' + dedent(`
                 ${`Embark version mismatch`.underline}
 
                 ${`Invoked embark cli was a different version than package-local embark`.yellow.bold}
