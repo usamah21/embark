@@ -30,7 +30,7 @@ if (semver.lt(procNodeVer, minNodeVer)) {
     process.exit(1);
 }
 
-// if the property exists, the command was executed via `npm run ...`
+// if the env.INIT_CWD property exists, the command was executed via `npm run`
 var isNpmRun = process.env.hasOwnProperty('INIT_CWD');
 
 
