@@ -294,7 +294,7 @@ findPrefix(process.cwd()).then((pkgdir) => {
     }
 
     // console.log();
-    // console.log('embark version info');
+    // console.log('embark cli version info');
     // console.log('cmd:', cmdVersion);
     // console.log('pkgCmd:', pkgCmdVersion);
     // console.log();
