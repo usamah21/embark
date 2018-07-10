@@ -136,9 +136,9 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
 
                 ${`Invoked embark cli was a different version than package-local embark`.yellow.bold}
 
-                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
                 local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
-            `).trim());
+                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
+            `).trim() + '\n');
         }
     } catch (e) {
         console.warn('\n' + dedent(`
@@ -147,7 +147,7 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
             ${`Version info not obtained from package-local embark command`.yellow.bold}
 
             path: ${pkgCmdPath}
-        `).trim());
+        `).trim() + '\n');
     }
 }
 
