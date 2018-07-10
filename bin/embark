@@ -5,9 +5,9 @@ var fs = require('fs');
 var path = require('path');
 var semver = require('semver');
 
-console.log();
-console.log('process.argv');
-console.log(process.argv);
+// console.log();
+// console.log('process.argv');
+// console.log(process.argv);
 
 var CmdEmbark = require('../lib/index');
 var minVer = '8.11.3';
@@ -48,11 +48,11 @@ if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
     }
 }
 
-console.log();
-console.log('cmd path:', cmdPath);
-console.log('cmd real:', cmdPathReal);
-console.log('pkgCmd path:', pkgCmdPath);
-console.log('pkgCmd real:', pkgCmdPathReal);
+// console.log();
+// console.log('cmd path:', cmdPath);
+// console.log('cmd real:', cmdPathReal);
+// console.log('pkgCmd path:', pkgCmdPath);
+// console.log('pkgCmd real:', pkgCmdPathReal);
 
 var pkgJson = null;
 var pkgJsonPath = path.join(process.cwd(), 'package.json');
@@ -114,14 +114,14 @@ if (pkgJsonPathReal && pkgJson) {
     }
 }
 
-console.log();
-console.log('package.json');
-console.log(pkgJson);
+// console.log();
+// console.log('package.json');
+// console.log(pkgJson);
 
-console.log();
-console.log('embark dep info');
-console.log('dep:', pkgJsonDepVersionRange);
-console.log('devDep:', pkgJsonDevDepVersionRange);
+// console.log();
+// console.log('embark dep info');
+// console.log('dep:', pkgJsonDepVersionRange);
+// console.log('devDep:', pkgJsonDevDepVersionRange);
 
 if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
     try {
@@ -151,11 +151,11 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
     }
 }
 
-console.log();
-console.log('embark version info');
-console.log('cmd:', cmdVersion);
-console.log('pkgCmd:', pkgCmdVersion);
-console.log();
+// console.log();
+// console.log('embark version info');
+// console.log('cmd:', cmdVersion);
+// console.log('pkgCmd:', pkgCmdVersion);
+// console.log();
 
 if (pkgCmdVersion) {
     process.argv[1] = pkgCmdPath;
