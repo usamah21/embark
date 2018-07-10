@@ -39,6 +39,8 @@ findPrefix(process.cwd()).then((pkgdir) => {
     }
 
     var warned = false;
+    var warnFallback = false;
+
     var pkgJson = null;
     var pkgJsonPath = path.join(process.cwd(), 'package.json');
     var pkgJsonPathReal = null;
@@ -52,23 +54,17 @@ findPrefix(process.cwd()).then((pkgdir) => {
     var pkgJsonDevDepVersionRangeValid = null;
 
     try {
-        pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
         pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
     } catch (e) {
-        console.warn(reformat(`
-            ${`Missing package-local embark command`.underline}
         console.error(reformat(`
             ${`Missing package.json`.underline}
 
             ${`File not found`.red.bold}
 
-            ${`Path not found`.yellow.bold}
             ${`Make sure a valid package.json file exists at the top-level of your DApp project`.yellow.bold}
 
-            ${pkgCmdPath.red.bold}
             package.json path: ${pkgJsonPath.red.bold}
         `));
-        warned = true;
         process.exit(1);
     }
 
@@ -210,40 +206,116 @@ findPrefix(process.cwd()).then((pkgdir) => {
     // console.log();
     // console.log('embark.json');
     // console.log(embarkJson);
+
+    var CmdEmbark = require('../lib/index');
+    var cmdPath = __filename;
+    var cmdPathInvoked = process.argv[1];
+    var cmdPathReal = fs.realpathSync(cmdPath);
+    var cmdVersion = semver.clean((new CmdEmbark).version);
+
+    var localCmdPath = path.join(process.cwd(), 'node_modules/embark/bin/embark');
+    var localCmdPathReal = null;
+
+    var localDotBinCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
+    var localDotBinCmdPathReal = null;
+
+    if (!has_INIT_CWD) {
+        try {
+            localCmdPathReal = fs.realpathSync(localCmdPath);
+        } catch (e) {}
+
+        try {
+            localDotBinCmdPathReal = fs.realpathSync(localDotBinCmdPath);
+        } catch (e) {}
     }
 
+    // console.log();
+    // console.log('cmd path:', cmdPath);
+    // console.log('cmd real:', cmdPathReal);
+    // console.log('localCmd path:', localCmdPath);
+    // console.log('localCmd real:', localCmdPathReal);
+    // console.log('localDotBinCmd path:', localDotBinCmdPath);
+    // console.log('localDotBinCmd real:', localDotBinCmdPathReal);
+
+    if (!(has_INIT_CWD
+          || cmdPathReal === localCmdPathReal
+          || cmdPathReal === localDotBinCmdPathReal) && !localDotBinCmdPathReal) {
         console.warn(reformat(`
+            ${`Missing package-local embark command`.underline}
 
+            ${`File not found`.yellow.bold}
 
+            command path: ${localDotBinCmdPath.yellow.bold}
         `));
         warned = true;
+        warnFallback = true;
     }
 
+    var PkgCmdEmbark = null;
+    var pkgCmdPath = localDotBinCmdPath;
+    var pkgCmdPathReal = localDotBinCmdPathReal;
+    var pkgCmdVersion = null;
 
+    // console.log();
+    // console.log('pkgCmd path:', pkgCmdPath);
+    // console.log('pkgCmd real:', pkgCmdPathReal);
 
+    if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
+        try {
+            PkgCmdEmbark = require(
+                path.join(path.dirname(pkgCmdPath), '../embark/lib/index')
+            );
+            pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
-        if (cmdVersion !== pkgCmdVersion) {
+            if (cmdVersion !== pkgCmdVersion) {
+                console.warn(reformat(`
+                    ${`Embark version mismatch`.underline}
+
+                    ${`Invoked cli was a different version than package-local`.yellow.bold}
+
+                    ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
+                    ${cmdVersion.magenta.bold} \t invoked \t ${cmdPathInvoked}
+
+                    Redirecting to ${`local`.green.bold} embark command
+                `));
+                warned = true;
+            }
+        } catch (e) {
             console.warn(reformat(`
-                ${`Embark version mismatch`.underline}
+                ${`Missing version information`.underline}
 
-                ${`Invoked embark cli was a different version than package-local embark`.yellow.bold}
+                ${`Version info could not be obtained from package-local embark command`.yellow.bold}
 
-                ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
-                ${cmdVersion.yellow.bold} \t invoked \t ${cmdPath}
+                local command path: ${pkgCmdPath.yellow.bold}
             `));
             warned = true;
+            warnFallback = true;
         }
-    } catch (e) {
-        console.warn(reformat(`
-            ${`Missing version information`.underline}
-
-            ${`Version info not obtained from package-local embark command`.yellow.bold}
-
-            path: ${pkgCmdPath}
-        `));
-        warned = true;
     }
 
+    // console.log();
+    // console.log('embark version info');
+    // console.log('cmd:', cmdVersion);
+    // console.log('pkgCmd:', pkgCmdVersion);
+    // console.log();
 
+    if (pkgCmdVersion) {
+        if (warned) { console.log(); }
+        process.argv[1] = pkgCmdPath;
+        require(pkgCmdPath);
+    } else {
+        if (warnFallback) {
+            console.warn(reformat(`
+                ${`Embark cli fallback`.underline}
 
+                ${`Running invoked command directly instead of redirecting to package-local command`.yellow.bold}
+
+                invoked command path: ${cmdPathInvoked.magenta.bold}
+            `));
+        }
+        if (warned) { console.log(); }
+        var Cmd = require('../lib/cmd');
+        var cli = new Cmd();
+        cli.process(process.argv);
+    }
 });
