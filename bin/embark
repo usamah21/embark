@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('colors');
 var dedent = require('dedent');
 var fs = require('fs');
 var path = require('path');
