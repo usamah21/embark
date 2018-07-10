@@ -1,30 +1,32 @@
 #!/usr/bin/env node
 
+/* global __filename process require */
+
 var dedent = require('dedent');
 var fs = require('fs');
 var path = require('path');
 var semver = require('semver');
 
-if (semver.lt(semver.clean(process.version), '8.11.3')) {
-    console.error('Unsupported version of Node.js, make sure you are running' +
-                  ' version 8.11.3 or newer');
-    process.exit();
-}
-// try {
-//   eval('let __nodeTest = 123;');
-// } catch(e) {
-//   if (e.name === 'SyntaxError') {
-//     console.error('unsupported version of NodeJS. Make sure you are running nodejs 6.9.5 or above');
-//     process.exit();
-//   }
-// }
-
 console.log();
 console.log('process.argv');
 console.log(process.argv);
-console.log();
 
 var CmdEmbark = require('../lib/index');
+var minVer = '8.11.3';
+var procVer = semver.clean(process.version);
+
+if (semver.lt(procVer, minVer)) {
+    console.error('\n' + dedent(`
+        ${('Unsupported Node.js version').underline}
+
+        Embark requires a newer version of Node.js
+
+        actual \t\t    ${procVer.red.bold}
+        required \t ${`>= ${minVer}`.green.bold}
+    `).trim());
+    process.exit();
+}
+
 var cmdPath = __filename;
 var cmdPathReal = fs.realpathSync(cmdPath);
 var cmdVersion = semver.clean((new CmdEmbark).version);
@@ -38,7 +40,11 @@ if (path.dirname(cmdPath).split(path.sep).pop() !== '.bin') {
     try {
         pkgCmdPathReal = fs.realpathSync(pkgCmdPath);
     } catch (e) {
-        console.warn('did not find package-local embark at ' + pkgCmdPath);
+        console.warn('\n' + dedent(`
+            ${('Missing package-local embark command').underline}
+
+            path not found: ${pkgCmdPath.yellow.bold}
+        `).trim());
     }
 }
 
@@ -47,7 +53,6 @@ console.log('cmd path:', cmdPath);
 console.log('cmd real:', cmdPathReal);
 console.log('pkgCmd path:', pkgCmdPath);
 console.log('pkgCmd real:', pkgCmdPathReal);
-console.log();
 
 var pkgJson = null;
 var pkgJsonPath = path.join(process.cwd(), 'package.json');
@@ -58,14 +63,22 @@ var pkgJsonDevDepVersionRange = null;
 try {
     pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
 } catch (e) {
-    console.warn('did not find ' + pkgJsonPath);
+    console.warn('\n' + dedent(`
+        ${('Missing package.json').underline}
+
+        path not found: ${pkgJsonPath.yellow.bold}
+    `).trim());
 }
 
 if (pkgJsonPathReal) {
     try {
         pkgJson = require(pkgJsonPath);
     } catch (e) {
-        console.warn('unable to load ' + pkgJsonPath);
+        console.warn('\n' + dedent(`
+            ${('Bad package.json').underline}
+
+            contents invalid: ${pkgJsonPath.yellow.bold}
+        `).trim());
     }
 }
 
@@ -87,8 +100,13 @@ if (pkgJsonPathReal && pkgJson) {
     }
 
     if (!(pkgJsonDepVersionRange || pkgJsonDevDepVersionRange)) {
-        console.warn('embark was not validly specified in either ' +
-                     '"dependencies" or "devDependencies" of ' + pkgJsonPath);
+        console.warn('\n' + dedent(`
+            ${('Missing package-local depedency in package.json').underline}
+
+            ${('"embark" was not validly specified in dependencies or devDependencies').yellow.bold}
+
+            recommended fix: ${`\`npm install --save embark\``.green.bold}
+        `).trim());
     }
 }
 
@@ -100,7 +118,6 @@ console.log();
 console.log('embark dep info');
 console.log('dep:', pkgJsonDepVersionRange);
 console.log('devDep:', pkgJsonDevDepVersionRange);
-console.log();
 
 if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
     try {
@@ -110,13 +127,22 @@ if (pkgCmdPathReal && cmdPathReal !== pkgCmdPathReal) {
         pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
         if (cmdVersion !== pkgCmdVersion) {
-            console.warn('Embark version mismatch: ' + cmdPath +
-                         ' is version ' + cmdVersion +
-                         ' but ' + pkgCmdPath +
-                         ' is version ' + pkgCmdVersion);
+            console.log('\n' + dedent(`
+                ${('Embark version mismatch').underline}
+
+                local \t\t${pkgCmdVersion.green.bold} \t ${pkgCmdPath}
+                invoked \t${cmdVersion.yellow.bold} \t ${cmdPath}
+
+            `).trim());
         }
     } catch (e) {
-        console.warn('unable to determine version of ' + pkgCmdPath);
+        console.warn('\n' + dedent(`
+            ${('Missing version information').underline}
+
+            ${('Version info not obtained from package-local embark command').yellow.bold}
+
+            path: ${pkgCmdPath}
+        `).trim());
     }
 }
 
