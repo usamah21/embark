@@ -28,7 +28,7 @@ if (semver.lt(procNodeVer, minNodeVer)) {
         ${`>= ${minNodeVer}`.green.bold} \t required
         ${`   ${procNodeVer}`.red.bold} \t actual
     `));
-    process.exit();
+    process.exit(1);
 }
 
 var CmdEmbark = require('../lib/index');
