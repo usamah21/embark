@@ -296,6 +296,35 @@ if (!['blockchain',
                 );
                 pkgCmdVersion = semver.clean((new PkgCmdEmbark).version);
 
+                var suggestNpmRunOnly = dedent(`
+                    Consider invoking Embark commands in your DApp directory with:
+                    ${`npm run embark <cmd> [options]`.cyan}
+                    When not specifying options but not a command do:
+                    ${`npm run embark -- [options]`.cyan}
+                `.trim());
+
+                var suggestNpmRunAndScripts = dedent(`
+                    Consider adding ${`{"scripts": {"embark": "embark"}}`.cyan} to package.json
+                    Then invoke Embark commands in your DApp directory with: ${`npm run embark <cmd> [options]`.cyan}
+                    When not specifying a command do: ${`npm run embark -- [options]`.cyan}
+                `.trim());
+
+                function suggestNpmRun() {
+                    var embarkScript = null;
+                    var hasEmbarkScript = false;
+                    try {
+                        embarkScript = pkgJson.scripts.embark;
+                        if (embarkScript) {
+                            hasEmbarkScript = true;
+                        }
+                    } catch (e) {}
+                    if (hasEmbarkScript) {
+                        return suggestNpmRunOnly;
+                    } else {
+                        return suggestNpmRunAndScripts;
+                    }
+                }
+
                 if (cmdVersion !== pkgCmdVersion) {
                     console.warn(reformat(`
                         ${`Embark version mismatch`.underline}
@@ -304,6 +333,18 @@ if (!['blockchain',
 
                         ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
                         ${cmdVersion.yellow.bold} \t invoked \t ${cmdPathInvoked}
+
+                        Redirecting to ${`local`.green.bold} embark command
+
+                        ${suggestNpmRun()}
+                    `));
+                    warned = true;
+                } else {
+                    console.warn(reformat(`
+                        ${`Embark command redirection`.underline}
+
+                        ${`local`.green.bold} \t\t ${pkgCmdPath}
+                        ${`invoked`.magenta.bold} \t ${cmdPathInvoked}
 
                         Redirecting to ${`local`.green.bold} embark command
 
