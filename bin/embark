@@ -151,9 +151,10 @@ if (!['blockchain',
 
                     ${`Embark package was not specified in "dependencies" or "devDependencies" of package.json`.yellow.bold}
 
-                    ${`recommended fix: \`npm install --save embark\``.green.bold}
-
                     package.json path: ${pkgJsonPath.yellow.bold}
+
+                    Consider installing the Embark package locally with:
+                    ${`npm install --save embark`.cyan}
                 `));
                 warned = true;
             }
@@ -262,9 +263,10 @@ if (!['blockchain',
 
                 ${`File not found`.yellow.bold}
 
-                ${`recommended fix: \`npm install --save embark\``.green.bold}
-
                 command path: ${localDotBinCmdPath.yellow.bold}
+
+                Consider installing the Embark package locally with:
+                ${`npm install --save embark`.cyan}
             `));
             warned = true;
             warnFallback = true;
@@ -289,14 +291,17 @@ if (!['blockchain',
                 var suggestNpmRunOnly = dedent(`
                     Consider invoking Embark commands in your DApp directory with:
                     ${`npm run embark <cmd> [options]`.cyan}
-                    When not specifying options but not a command do:
+                    When specifying options but not a command do:
                     ${`npm run embark -- [options]`.cyan}
                 `.trim());
 
                 var suggestNpmRunAndScripts = dedent(`
-                    Consider adding ${`{"scripts": {"embark": "embark"}}`.cyan} to package.json
-                    Then invoke Embark commands in your DApp directory with: ${`npm run embark <cmd> [options]`.cyan}
-                    When not specifying a command do: ${`npm run embark -- [options]`.cyan}
+                    Consider adding an embark script to package.json:
+                    ${`{"scripts": {"embark": "embark"}}`.cyan}
+                    Then invoke Embark commands in your DApp directory with:
+                    ${`npm run embark <cmd> [options]`.cyan}
+                    When specifying options but not a command do:
+                    ${`npm run embark -- [options]`.cyan}
                 `.trim());
 
                 function suggestNpmRun() {
@@ -319,7 +324,7 @@ if (!['blockchain',
                     console.warn(reformat(`
                         ${`Embark version mismatch`.underline}
 
-                        ${`Invoked cli was a different version than package-local`.yellow.bold}
+                        ${`Invoked cli was a different version than package-local embark command`.yellow.bold}
 
                         ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
                         ${cmdVersion.yellow.bold} \t invoked \t ${cmdPathInvoked}
