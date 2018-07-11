@@ -4,12 +4,14 @@
   "description": "",
   "main": "Gruntfile.js",
   "scripts": {
+    "embark": "embark",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "homepage": "",
   "dependencies": {
+    "embark": "latest",
     "react": "^16.3.2",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.3.2"

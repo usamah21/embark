@@ -3,11 +3,15 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
+    "embark": "embark",
     "test": "embark test"
   },
   "author": "",
   "license": "ISC",
   "homepage": "",
+  "dependencies": {
+    "embark": "latest"
+  },
   "devDependencies": {
   }
 }
