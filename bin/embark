@@ -84,14 +84,14 @@ if (!['blockchain',
             pkgJsonPathReal = fs.realpathSync(pkgJsonPath);
         } catch (e) {
             console.error(reformat(`
-            ${`Missing package.json`.underline}
+                ${`Missing package.json`.underline}
 
-            ${`File not found`.red.bold}
+                ${`File not found`.red.bold}
 
-            ${`Make sure a valid package.json file exists at the top-level of your DApp project`.yellow.bold}
+                ${`Make sure a valid package.json file exists at the top-level of your DApp project`.yellow.bold}
 
-            package.json path: ${pkgJsonPath.red.bold}
-        `));
+                package.json path: ${pkgJsonPath.red.bold}
+            `));
             process.exit(1);
         }
 
@@ -100,12 +100,12 @@ if (!['blockchain',
                 pkgJson = require(pkgJsonPath);
             } catch (e) {
                 console.error(reformat(`
-                ${`Bad package.json`.underline}
+                    ${`Bad package.json`.underline}
 
-                ${`File could not be parsed as valid JSON`.red.bold}
+                    ${`File could not be parsed as valid JSON`.red.bold}
 
-                package.json path: ${pkgJsonPath.red.bold}
-            `));
+                    package.json path: ${pkgJsonPath.red.bold}
+                `));
                 process.exit(1);
             }
         }
@@ -147,36 +147,36 @@ if (!['blockchain',
 
             if (pkgJsonDepVersionRangeMissing && pkgJsonDevDepVersionRangeMissing) {
                 console.warn(reformat(`
-                ${`Missing "embark" depedency in package.json`.underline}
+                    ${`Missing "embark" depedency in package.json`.underline}
 
-                ${`Embark package was not specified in "dependencies" or "devDependencies" of package.json`.yellow.bold}
+                    ${`Embark package was not specified in "dependencies" or "devDependencies" of package.json`.yellow.bold}
 
-                ${`recommended fix: \`npm install --save embark\``.green.bold}
+                    ${`recommended fix: \`npm install --save embark\``.green.bold}
 
-                package.json path: ${pkgJsonPath.yellow.bold}
-            `));
+                    package.json path: ${pkgJsonPath.yellow.bold}
+                `));
                 warned = true;
             }
 
             if (!pkgJsonDepVersionRangeMissing && !pkgJsonDevDepVersionRangeMissing) {
                 console.warn(reformat(`
-                ${`Multiple "embark" depedencies in package.json`.underline}
+                    ${`Multiple "embark" depedencies in package.json`.underline}
 
-                ${`Embark package was specified in both "dependencies" and "devDependencies" of package.json`.yellow.bold}
+                    ${`Embark package was specified in both "dependencies" and "devDependencies" of package.json`.yellow.bold}
 
-                package.json path: ${pkgJsonPath.yellow.bold}
-            `));
+                    package.json path: ${pkgJsonPath.yellow.bold}
+                `));
                 warned = true;
             }
 
             function warnInvalid(which) {
                 console.warn(reformat(`
-                ${`Bad "embark" depedency in package.json`.underline}
+                    ${`Bad "embark" depedency in package.json`.underline}
 
-                ${`Embark package was invalidly specified in "${which}" of package.json`.yellow.bold}
+                    ${`Embark package was invalidly specified in "${which}" of package.json`.yellow.bold}
 
-                package.json path: ${pkgJsonPath.yellow.bold}
-            `));
+                    package.json path: ${pkgJsonPath.yellow.bold}
+                `));
                 warned = true;
             }
 
@@ -204,14 +204,14 @@ if (!['blockchain',
             embarkJsonPathReal = fs.realpathSync(embarkJsonPath);
         } catch (e) {
             console.error(reformat(`
-            ${`Missing embark.json`.underline}
+                ${`Missing embark.json`.underline}
 
-            ${`File not found`.red.bold}
+                ${`File not found`.red.bold}
 
-            ${`Make sure a valid embark.json file exists at the top-level of your DApp project`.yellow.bold}
+                ${`Make sure a valid embark.json file exists at the top-level of your DApp project`.yellow.bold}
 
-            embark.json path: ${embarkJsonPath.red.bold}
-        `));
+                embark.json path: ${embarkJsonPath.red.bold}
+            `));
             process.exit(1);
         }
 
@@ -220,12 +220,12 @@ if (!['blockchain',
                 embarkJson = require(embarkJsonPath);
             } catch (e) {
                 console.error(reformat(`
-                ${`Bad embark.json`.underline}
+                    ${`Bad embark.json`.underline}
 
-                ${`File could not be parsed as valid JSON`.red.bold}
+                    ${`File could not be parsed as valid JSON`.red.bold}
 
-                embark.json path: ${embarkJsonPath.red.bold}
-            `));
+                    embark.json path: ${embarkJsonPath.red.bold}
+                `));
                 process.exit(1);
             }
         }
@@ -268,12 +268,14 @@ if (!['blockchain',
               || cmdPathReal === localCmdPathReal
               || cmdPathReal === localDotBinCmdPathReal) && !localDotBinCmdPathReal) {
             console.warn(reformat(`
-            ${`Missing package-local embark command`.underline}
+                ${`Missing package-local embark command`.underline}
 
-            ${`File not found`.yellow.bold}
+                ${`File not found`.yellow.bold}
 
-            command path: ${localDotBinCmdPath.yellow.bold}
-        `));
+                ${`recommended fix: \`npm install --save embark\``.green.bold}
+
+                command path: ${localDotBinCmdPath.yellow.bold}
+            `));
             warned = true;
             warnFallback = true;
         }
@@ -296,25 +298,27 @@ if (!['blockchain',
 
                 if (cmdVersion !== pkgCmdVersion) {
                     console.warn(reformat(`
-                    ${`Embark version mismatch`.underline}
+                        ${`Embark version mismatch`.underline}
 
-                    ${`Invoked cli was a different version than package-local`.yellow.bold}
+                        ${`Invoked cli was a different version than package-local`.yellow.bold}
 
-                    ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
-                    ${cmdVersion.magenta.bold} \t invoked \t ${cmdPathInvoked}
+                        ${pkgCmdVersion.green.bold} \t local \t\t ${pkgCmdPath}
+                        ${cmdVersion.yellow.bold} \t invoked \t ${cmdPathInvoked}
 
-                    Redirecting to ${`local`.green.bold} embark command
-                `));
+                        Redirecting to ${`local`.green.bold} embark command
+
+                        ${suggestNpmRun()}
+                    `));
                     warned = true;
                 }
             } catch (e) {
                 console.warn(reformat(`
-                ${`Missing version information`.underline}
+                    ${`Missing version information`.underline}
 
-                ${`Version info could not be obtained from package-local embark command`.yellow.bold}
+                    ${`Version info could not be obtained from package-local embark command`.yellow.bold}
 
-                local command path: ${pkgCmdPath.yellow.bold}
-            `));
+                    local command path: ${pkgCmdPath.yellow.bold}
+                `));
                 warned = true;
                 warnFallback = true;
             }
@@ -335,12 +339,12 @@ if (!['blockchain',
         } else {
             if (warnFallback) {
                 console.warn(reformat(`
-                ${`Embark cli fallback`.underline}
+                    ${`Embark cli fallback`.underline}
 
-                ${`Running invoked command directly instead of redirecting to package-local command`.yellow.bold}
+                    ${`Running invoked command directly instead of redirecting to package-local command`.yellow.bold}
 
-                invoked command path: ${cmdPathInvoked.magenta.bold}
-            `));
+                    invoked command path: ${cmdPathInvoked.magenta.bold}
+                `));
             }
             if (warned) { console.log(); }
             runCmd();
