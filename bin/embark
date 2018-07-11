@@ -365,13 +365,50 @@ if (!['blockchain',
             }
         }
 
-        // test version against semver ranges
-
         // console.log();
         // console.log('embark cli version info');
         // console.log('cmd:', cmdVersion);
         // console.log('pkgCmd:', pkgCmdVersion);
         // console.log();
+
+        function warnMismatch(which) {
+            var range;
+
+            switch (which) {
+            case 'dependencies':
+                range = pkgJsonDepVersionRangeValid;
+                break;
+            case 'devDependencies':
+                range = pkgJsonDevDepVersionRangeValid;
+                break;
+            }
+
+            console.warn(reformat(`
+                ${`Embark version mismatch`.underline}
+
+                ${`Version range for Embark package specified in "${which}" of package.json
+                is not satisfied by package-local embark command`.yellow.bold}
+
+                ${`${range}`.green.bold} \t range
+                ${`${pkgCmdVersion}`.yellow.bold} \t\t version
+
+                local command path: ${pkgCmdPath.yellow.bold}
+                package.json path:  ${pkgJsonPath.yellow.bold}
+            `));
+            warned = true;
+        }
+
+        if (!pkgJsonDepVersionRangeMissing
+            && pkgCmdVersion
+            && !semver.satisfies(pkgCmdVersion, pkgJsonDepVersionRangeValid)) {
+            warnMismatch('dependencies');
+        }
+
+        if (!pkgJsonDevDepVersionRangeMissing
+            && pkgCmdVersion
+            && !semver.satisfies(pkgCmdVersion, pkgJsonDevDepVersionRangeValid)) {
+            warnMismatch('devDependencies');
+        }
 
         if (pkgCmdVersion) {
             if (warned) { console.log(); }
