@@ -240,17 +240,10 @@ if (!['blockchain',
         var cmdPathReal = fs.realpathSync(cmdPath);
         var cmdVersion = semver.clean((new CmdEmbark).version);
 
-        var localCmdPath = path.join(process.cwd(), 'node_modules/embark/bin/embark');
-        var localCmdPathReal = null;
-
         var localDotBinCmdPath = path.join(process.cwd(), 'node_modules/.bin/embark');
         var localDotBinCmdPathReal = null;
 
         if (!isNpmRun) {
-            try {
-                localCmdPathReal = fs.realpathSync(localCmdPath);
-            } catch (e) {}
-
             try {
                 localDotBinCmdPathReal = fs.realpathSync(localDotBinCmdPath);
             } catch (e) {}
@@ -259,13 +252,10 @@ if (!['blockchain',
         // console.log();
         // console.log('cmd path:', cmdPath);
         // console.log('cmd real:', cmdPathReal);
-        // console.log('localCmd path:', localCmdPath);
-        // console.log('localCmd real:', localCmdPathReal);
         // console.log('localDotBinCmd path:', localDotBinCmdPath);
         // console.log('localDotBinCmd real:', localDotBinCmdPathReal);
 
         if (!(isNpmRun
-              || cmdPathReal === localCmdPathReal
               || cmdPathReal === localDotBinCmdPathReal) && !localDotBinCmdPathReal) {
             console.warn(reformat(`
                 ${`Missing package-local embark command`.underline}
