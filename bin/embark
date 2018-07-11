@@ -362,43 +362,41 @@ if (!['blockchain',
         // console.log();
 
         function warnMismatch(which) {
+            var missing
             var range;
 
             switch (which) {
             case 'dependencies':
+                missing = pkgJsonDepVersionRangeMissing;
                 range = pkgJsonDepVersionRangeValid;
                 break;
             case 'devDependencies':
+                missing = pkgJsonDevDepVersionRangeMissing;
                 range = pkgJsonDevDepVersionRangeValid;
                 break;
             }
 
-            console.warn(reformat(`
-                ${`Embark version mismatch`.underline}
+            if (!missing
+                && pkgCmdVersion
+                && !semver.satisfies(pkgCmdVersion, range)) {
+                console.warn(reformat(`
+                    ${`Embark version mismatch`.underline}
 
-                ${`Version range for Embark package specified in "${which}" of package.json
-                is not satisfied by package-local embark command`.yellow.bold}
+                    ${`Version range for Embark package specified in "${which}" of package.json
+                    is not satisfied by package-local embark command`.yellow.bold}
 
-                ${`${range}`.green.bold} \t range
-                ${`${pkgCmdVersion}`.yellow.bold} \t\t version
+                    ${`${range}`.green.bold} \t range
+                    ${`${pkgCmdVersion}`.yellow.bold} \t\t version
 
-                local command path: ${pkgCmdPath.yellow.bold}
-                package.json path:  ${pkgJsonPath.yellow.bold}
-            `));
-            warned = true;
+                    local command path: ${pkgCmdPath.yellow.bold}
+                    package.json path:  ${pkgJsonPath.green.bold}
+                `));
+                warned = true;
+            }
         }
 
-        if (!pkgJsonDepVersionRangeMissing
-            && pkgCmdVersion
-            && !semver.satisfies(pkgCmdVersion, pkgJsonDepVersionRangeValid)) {
-            warnMismatch('dependencies');
-        }
-
-        if (!pkgJsonDevDepVersionRangeMissing
-            && pkgCmdVersion
-            && !semver.satisfies(pkgCmdVersion, pkgJsonDevDepVersionRangeValid)) {
-            warnMismatch('devDependencies');
-        }
+        warnMismatch('dependencies');
+        warnMismatch('devDependencies');
 
         if (pkgCmdVersion) {
             if (warned) { console.log(); }
