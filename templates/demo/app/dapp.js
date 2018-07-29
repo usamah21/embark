@@ -9,6 +9,9 @@ import Storage from './components/storage';
 
 import './dapp.css';
 
+// use this to access the EmbarkJS API from the browser dev tools
+window.EmbarkJS = EmbarkJS;
+
 class App extends React.Component {
 
   constructor(props) {
@@ -20,29 +23,27 @@ class App extends React.Component {
     }
   }
 
+  _checkMessages = async() => {
+    let isAvailable = false;
+    if (!EmbarkJS.isNewWeb3() && EmbarkJS.Messages.providerName === 'whisper') {
+      isAvailable = await EmbarkJS.Messages.Providers.whisper.isAvailable();
+    } else {
+      isAvailable = EmbarkJS.Messages.isAvailable();
+    }
+    this.setState({whisperEnabled: isAvailable})
+  }
+  
+  _checkStorage = async() => {
+    const storageEnabled = await EmbarkJS.Storage.isAvailable();
+    this.setState({
+      storageEnabled: storageEnabled
+    });
+  }
+
   componentDidMount(){ 
     EmbarkJS.onReady(() => {
-      if (EmbarkJS.isNewWeb3()) {
-        EmbarkJS.Messages.Providers.whisper.getWhisperVersion((err, version) => { 
-          if(!err)
-              this.setState({whisperEnabled: true})
-            else
-              console.log(err);
-        });
-      } else {
-        if (EmbarkJS.Messages.providerName === 'whisper') {
-          EmbarkJS.Messages.getWhisperVersion((err, version) => {
-            if(!err)
-              this.setState({whisperEnabled: true})
-            else
-              console.log(err);
-          });
-        }
-      }
-
-      this.setState({
-        storageEnabled: true
-      });
+      this._checkMessages();
+      this._checkStorage();
     });
   }
 
