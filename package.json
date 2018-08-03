@@ -37,6 +37,7 @@
     "commander": "^2.15.1",
     "css-loader": "^0.28.11",
     "decompress": "^4.2.0",
+    "dedent": "^0.7.0",
     "deep-equal": "^1.0.1",
     "ejs": "^2.5.8",
     "embarkjs": "^0.3.1",
