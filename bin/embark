@@ -2,6 +2,7 @@
 
 require('colors');
 var dedent = require('dedent');
+var findPrefix = require('find-npm-prefix');
 var fs = require('fs');
 var path = require('path');
 var semver = require('semver');
