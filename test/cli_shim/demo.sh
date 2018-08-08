@@ -14,7 +14,7 @@ reset_shim_demo() {
 export -f reset_shim_demo
 
 run_shim_demo () {
-    local EMBARK_BRANCH="${EMBARK_BRANCH:-develop}"
+    local EMBARK_BRANCH="${EMBARK_BRANCH:-features/global-local-cmd-shim}"
     local EMBARK_DOCKER_IMAGE="${EMBARK_DOCKER_IMAGE:-statusim/embark}"
     local EMBARK_DOCKER_RUN
     local EMBARK_DOCKER_RUN_INTERACTIVE
@@ -26,7 +26,6 @@ run_shim_demo () {
     # ^ for local override spec with /path/to/embark-docker/
     local EMBARK_SHIM_DEMO_DEV=${EMBARK_SHIM_DEMO_DEV:-false}
     local EMBARK_VERSION="${EMBARK_VERSION:-embark-framework/embark#${EMBARK_BRANCH}}"
-    # ^ change to #features/global-local-cmd-shim when that's up-to-date
     local REAL="${REAL:-https://gist.githubusercontent.com/michaelsbradleyjr/87b5a99ad551e04cbad9c0c1d3af412b/raw/bfec2e589a91302b30f1d7cac8c2df71e5ebabe0/real.sh}"
     local RUNNER="${RUNNER:-https://raw.githubusercontent.com/embark-framework/embark-docker/master/run.sh}"
     # ^ for local override spec URL with file:///path/to/run.sh
@@ -221,15 +220,10 @@ run_shim_demo () {
 	          ~/repos/embark \
 	          ~/working/
 	fi
-	pushd . &> /dev/null
 	cd ~
 	nac lts
 	embark demo
-	cd embark_demo
-	npm install embark@latest
-	# ^ don't need to do this once using the shim branch from github
-	# because the templates spec embark@latest
-	popd &> /dev/null
+	cd - &> /dev/null
 	SCRIPT
         # do not alter indentation, tabs in lines above
         cd "$td_dapp"
