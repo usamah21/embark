@@ -65,7 +65,7 @@ run_shim_demo () {
     check_image () {
         local tag
         if [[ -z "$1" ]]; then
-            tag="$shim_demo_tag"
+            tag="${__shim_demo_tag}-step-0"
         else
             tag="${__shim_demo_tag}-$1"
         fi
