@@ -375,9 +375,13 @@ run_shim_demo () {
 	txtrst=\$(tput sgr0)
 	bldcyn=\${txtbld}\$(tput setaf 6)
 	say () {
+	    local msg="\$1"
+	    msg="\$([[ "\$msg" =~ \
+	              [[:space:]]*([^[:space:]]|[^[:space:]].*[^[:space:]])[[:space:]]* ]]; \
+	              echo -n "\${BASH_REMATCH[1]}")"
 	    echo
 	    echo
-	    echo \${bldcyn}"\$1"\${txtrst}
+	    echo "\${bldcyn}\${msg}\${txtrst}"
 	}
 	export -f say
 	export PROMPT_COMMAND="echo; echo"

@@ -1,6 +1,8 @@
 say "$(cat << 'MSG'
+
 If the global embark's package.json does not specify a version then report
 warning and continue
+
 MSG
 )"
 

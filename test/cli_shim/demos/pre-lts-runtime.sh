@@ -1,6 +1,8 @@
 say "$(cat << 'MSG'
+
 If a node < version specified in global embark's "{engines: {...}}" is used to
 run embark then report error and exit
+
 MSG
 )"
 

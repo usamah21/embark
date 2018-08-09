@@ -1,5 +1,7 @@
 say "$(cat << 'MSG'
+
 If the global embark's package.json is missing then report error and exit
+
 MSG
 )"
 
