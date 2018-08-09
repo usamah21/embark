@@ -49,9 +49,9 @@ try {
   embarklog.error('badpkg', 'embark package could not parse its own package.json file');
   process.exit(1);
 }
-var embarkPkg
+var embarkPkg;
 if (!embarkPkgJson.version) {
-  embarklog.warn('json', embarkPkgJsonPath)
+  embarklog.warn('json', embarkPkgJsonPath);
   embarklog.warn('badpkg', 'embark package does not specify its own version in its own package.json file');
   embarkPkg = 'embark';
 } else {
