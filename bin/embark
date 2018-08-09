@@ -42,6 +42,7 @@ try {
   embarklog.error('badpkg', 'embark package could not locate its own package.json file');
   process.exit(1);
 }
+
 try {
   embarkPkgJson = require(embarkPkgJsonPath);
 } catch (e) {
@@ -49,6 +50,7 @@ try {
   embarklog.error('badpkg', 'embark package could not parse its own package.json file');
   process.exit(1);
 }
+
 var embarkPkg;
 if (!embarkPkgJson.version) {
   embarklog.warn('json', embarkPkgJsonPath);
@@ -78,6 +80,7 @@ try {
     nodeRange = embarkPkgJson.engines.node;
   }
 }
+
 try {
   nodeRange = semver.Range(nodeRange).range;
 } catch (e) {
