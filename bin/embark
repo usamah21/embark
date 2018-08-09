@@ -60,10 +60,10 @@ if (!embarkPkgJson.version) {
   embarkPkg = 'embark@' + embarkPkgJson.version;
 }
 
-var _nodeRange = semver.Range('>=8.11.3').range;
-// ^ if a source code change is made to this default value, make sure to
+// if a source code change is made the default _nodeRange value, make sure to
 // manually check that it's a valid semver range, otherwise the fallback logic
 // below won't fully hold
+var _nodeRange = semver.Range('>=8.11.3').range;
 var hasNodeRange;
 var nodeRange;
 try {
@@ -100,9 +100,9 @@ if (!semver.satisfies(procNodeVer, nodeRange)) {
   process.exit(1);
 }
 
-var isNpmRun = process.env.hasOwnProperty('npm_lifecycle_script');
-// ^ if env.npm_lifecycle_script prop exists, a command was invoked via
+// if env.npm_lifecycle_script prop exists, a command was invoked via
 // `npm run`, possibly embark itself but maybe something else
+var isNpmRun = process.env.hasOwnProperty('npm_lifecycle_script');
 
 // POC ONLY: it doesn't really make sense unless 'shim' defaults to false, so
 // this is more for demo purposes
@@ -160,7 +160,7 @@ function runCmd() {
 }
 
 // directly run an embark command when:
-//   there is no command
+//   there is no command, only `embark`
 //   there is no command, but option is one of: -h, --help, -V, --version
 //   the command is one of: new, demo, version
 if ([void 0,
