@@ -39,14 +39,14 @@ try {
   embarklog.error('errno', e.errno);
   embarklog.error('syscall', e.syscall);
   embarklog.error(e.code.toLowerCase(), e.message);
-  embarklog.error(e.code.toLowerCase(), 'embark package could not locate its own package.json file');
+  embarklog.error('badpkg', 'embark package could not locate its own package.json file');
   process.exit(1);
 }
 try {
   embarkPkgJson = require(embarkPkgJsonPath);
 } catch (e) {
   embarklog.error('json', e.message);
-  embarklog.error('pkg', 'embark package could not parse its own package.json file');
+  embarklog.error('badpkg', 'embark package could not parse its own package.json file');
   process.exit(1);
 }
 var embarkPkg = 'embark@' + embarkPkgJson.version;
