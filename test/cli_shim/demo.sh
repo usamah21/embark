@@ -94,6 +94,11 @@ run_shim_demo () {
     if ! check_image; then
         was_reset=true
         if [[ ! -z "$EMBARK_DOCKERFILE" ]]; then
+            # could expand the --build-arg list (and list of locals at top of
+            # function) w/ all the build args supported by embark-docker's
+            # Dockerfile; would be nice if it was super flexible, maybe
+            # forwarding all env variables that starts with 'EMBARK_', so as
+            # the Dockerfile evolves don't have to revise the lists
             docker build \
                    --build-arg EMBARK_VERSION="$EMBARK_VERSION" \
                    -t "${EMBARK_DOCKER_IMAGE}:${EMBARK_DOCKER_TAG}" \
