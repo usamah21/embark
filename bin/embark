@@ -151,7 +151,7 @@ if (process.argv.includes('--shim')) {
 }
 
 function runCmd() {
-  var Cmd = require('../lib/cmd');
+  var Cmd = require('../cmd/cmd');
   var cli = new Cmd();
   cli.process(process.argv);
 }
