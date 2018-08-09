@@ -62,7 +62,7 @@ run_shim_demo () {
     local cid_file="$script_dir/.cid"
     source <(curl "$RUNNER" 2> /dev/null)
 
-    __check_image () {
+    check_image () {
         local tag
         if [[ -z "$1" ]]; then
             tag="$shim_demo_tag"
@@ -75,10 +75,10 @@ run_shim_demo () {
         fi
     }
 
-    __return () {
+    cleanup () {
         local retval=$?
-        unset __check_image
-        unset __return
+        unset check_image
+        unset cleanup
         rm -f "$cid_file"
         cd "$work_dir"
         return $retval
@@ -91,22 +91,22 @@ run_shim_demo () {
     echo '-----------------------------------'
 
     shim_demo_tag="${__shim_demo_tag}-step-0"
-    if ! __check_image; then
+    if ! check_image; then
         was_reset=true
         if [[ ! -z "$EMBARK_DOCKERFILE" ]]; then
             docker build \
                    --build-arg EMBARK_VERSION="$EMBARK_VERSION" \
                    -t "${EMBARK_DOCKER_IMAGE}:${EMBARK_DOCKER_TAG}" \
                    "$EMBARK_DOCKERFILE" \
-                   || __return || return
+                   || cleanup || return
         else
             docker pull "${EMBARK_DOCKER_IMAGE}:${EMBARK_DOCKER_TAG}" \
-                || __return || return
+                || cleanup || return
         fi
         docker tag \
                "${EMBARK_DOCKER_IMAGE}:${EMBARK_DOCKER_TAG}" \
                "${EMBARK_DOCKER_IMAGE}:${shim_demo_tag}" \
-            || __return || return
+            || cleanup || return
     else
         echo "cached..."
     fi
@@ -117,28 +117,29 @@ run_shim_demo () {
     echo 'setup - STEP 1'
     echo '-----------------------------------'
 
-    if (! __check_image step-1) || [[ $was_reset = true ]]; then
+    if (! check_image step-1) || [[ $was_reset = true ]]; then
         was_reset=true
         rm -f "$cid_file"
         EMBARK_DOCKER_TAG="$shim_demo_tag" \
                          run_embark \
                          --cidfile "$cid_file" \
                          -d \
-                         -- bash -c 'trap "exit 0" SIGINT && while true; do sleep 1; done' \
-            || __return || return
+                         -- bash -c 'trap "exit 0" SIGINT \
+                                         && while true; do sleep 1; done' \
+            || cleanup || return
         docker exec \
                -it \
                $(cat "$cid_file") \
                bash -c 'apt-get update && apt-get install -y rsync' \
-            || __return || return
+            || cleanup || return
         shim_demo_tag="${__shim_demo_tag}-step-1"
         docker commit \
                --pause \
                $(cat "$cid_file") \
                "${EMBARK_DOCKER_IMAGE}:${shim_demo_tag}" \
-            || __return || return
+            || cleanup || return
         docker stop $(cat "$cid_file") \
-            || __return || return
+            || cleanup || return
         rm -f "$cid_file"
     else
         shim_demo_tag="${__shim_demo_tag}-step-1"
@@ -154,7 +155,7 @@ run_shim_demo () {
     local td_dapp="${HOME}/temp/$(basename $(mktemp -d))"
     mkdir -p "$td_dapp"
 
-    if (! __check_image step-2) || [[ $was_reset = true ]]; then
+    if (! check_image step-2) || [[ $was_reset = true ]]; then
         was_reset=true
         rm -f "$cid_file"
         # do not alter indentation, tabs in lines below
@@ -177,13 +178,13 @@ run_shim_demo () {
                          run_embark \
                          --cidfile "$cid_file" \
                          -- \
-            || __return || return
+            || cleanup || return
         EMBARK_DOCKER_RUN_RM=true
         shim_demo_tag="${__shim_demo_tag}-step-2"
         docker commit $(cat "$cid_file") "${EMBARK_DOCKER_IMAGE}:${shim_demo_tag}" \
-            || __return || return
+            || cleanup || return
         docker rm $(cat "$cid_file") \
-            || __return || return
+            || cleanup || return
         rm -f "$cid_file"
         cd "$work_dir"
     else
@@ -197,7 +198,7 @@ run_shim_demo () {
     echo 'setup - STEP 3'
     echo '-----------------------------------'
 
-    if (! __check_image step-3) || [[ $was_reset = true ]]; then
+    if (! check_image step-3) || [[ $was_reset = true ]]; then
         was_reset=true
         rm -f "$cid_file"
         # do not alter indentation, tabs in lines below
@@ -254,13 +255,13 @@ run_shim_demo () {
                          -- \
                          $EMBARK_SHIM_DEMO_DEV \
                          "$EMBARK_BRANCH" \
-            || __return || return
+            || cleanup || return
         EMBARK_DOCKER_RUN_RM=true
         shim_demo_tag="${__shim_demo_tag}-step-3"
         docker commit $(cat "$cid_file") "${EMBARK_DOCKER_IMAGE}:${shim_demo_tag}" \
-            || __return || return
+            || cleanup || return
         docker rm $(cat "$cid_file") \
-            || __return || return
+            || cleanup || return
         rm -f "$cid_file"
         cd "$work_dir"
     else
@@ -274,7 +275,7 @@ run_shim_demo () {
     echo 'setup - STEP 4'
     echo '-----------------------------------'
 
-    if (! __check_image step-4) || [[ $was_reset = true ]]; then
+    if (! check_image step-4) || [[ $was_reset = true ]]; then
         was_reset=true
         rm -f "$cid_file"
         # do not alter indentation, tabs in lines below
@@ -333,13 +334,13 @@ run_shim_demo () {
                          "${run_opts_step_4[@]}" \
                          -- \
                          $EMBARK_SHIM_DEMO_DEV \
-            || __return || return
+            || cleanup || return
         EMBARK_DOCKER_RUN_RM=true
         shim_demo_tag="${__shim_demo_tag}-step-4"
         docker commit $(cat "$cid_file") "${EMBARK_DOCKER_IMAGE}:${shim_demo_tag}" \
-            || __return || return
+            || cleanup || return
         docker rm $(cat "$cid_file") \
-            || __return || return
+            || cleanup || return
         rm -f "$cid_file"
         cd "$work_dir"
     else
@@ -409,7 +410,7 @@ run_shim_demo () {
                      "${run_opts_demo[@]}" \
                      -- \
                      $EMBARK_SHIM_DEMO_DEV \
-        || __return || return
+        || cleanup || return
     cd "$work_dir"
 }
 export -f run_shim_demo
