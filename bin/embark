@@ -49,7 +49,14 @@ try {
   embarklog.error('badpkg', 'embark package could not parse its own package.json file');
   process.exit(1);
 }
-var embarkPkg = 'embark@' + embarkPkgJson.version;
+var embarkPkg
+if (!embarkPkgJson.version) {
+  embarklog.warn('json', embarkPkgJsonPath)
+  embarklog.warn('badpkg', 'embark package does not specify its own version in its own package.json file');
+  embarkPkg = 'embark';
+} else {
+  embarkPkg = 'embark@' + embarkPkgJson.version;
+}
 
 var _nodeRange = semver.Range('>=8.11.3').range;
 // ^ if a source code change is made to this default value, make sure to
