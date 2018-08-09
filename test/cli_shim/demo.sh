@@ -392,10 +392,10 @@ run_shim_demo () {
 	# demos
 	$(< "$script_dir/demos/pre-lts-newer-npm.sh")
 	$(< "$script_dir/demos/lts-older-npm.sh")
-	$(< "$script_dir/demos/pre-lts-runtime.sh")
 	$(< "$script_dir/demos/global_missing_json.sh")
 	$(< "$script_dir/demos/global_bad_json.sh")
 	$(< "$script_dir/demos/global_no_version.sh")
+	$(< "$script_dir/demos/pre-lts-runtime.sh")
 	trap "exit 0" SIGINT && while true; do sleep 1; done
 	SCRIPT
     )
