@@ -2,9 +2,6 @@
 
 reset_shim_demo() {
     local EMBARK_DOCKER_IMAGE="${EMBARK_DOCKER_IMAGE:-michaelsbradleyjr/embark}"
-    # ^ once the PR is ready to merge this should be bumped to :-statusim/embark
-    # ^ pending embark@3.1.8 being published, and image for it pushed to docker
-    #   hub
     local EMBARK_DOCKER_TAG="${EMBARK_DOCKER_TAG:-latest}"
     local EMBARK_DOCKERFILE="${EMBARK_DOCKERFILE}"
     local shim_demo_tag
@@ -27,6 +24,7 @@ export -f reset_shim_demo
 run_shim_demo () {
     local EMBARK_BRANCH="${EMBARK_BRANCH:-features/global-local-cmd-shim}"
     # ^ once the PR is ready to merge this should be bumped to :-develop
+    #   be sure to bump it in reset_shim_demo also
     local EMBARK_DOCKER_IMAGE="${EMBARK_DOCKER_IMAGE:-michaelsbradleyjr/embark}"
     # ^ once the PR is ready to merge this should be bumped to :-statusim/embark
     # ^ pending embark@3.1.8 being published, and image for it pushed to docker
